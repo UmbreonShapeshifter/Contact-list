@@ -3,15 +3,18 @@ const fs = require("fs"),
   rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-  });
+  }),
+  contactData = "./contactData/";
 
 const app = () => {
-  console.log(`Welcome to the CLI contact list!`)
+  console.log(`Welcome to the CLI contact list!`);
 
-  rl.question(`
+  rl.question(
+`
 What would you like to do today?
 ===
-For a list of commands: type "Help"\n`,
+For a list of commands: type "Help"
+`,
 
     (response) => {
       response = response.split(` `);
@@ -21,7 +24,7 @@ For a list of commands: type "Help"\n`,
         case "help":
           console.log("Create: adds a new contact");
           app();
-          break;
+        break;
 
         case "create":
           rl.question("First Name: ", firstName => {
@@ -29,22 +32,40 @@ For a list of commands: type "Help"\n`,
               rl.question("Nickname (or Username): ", nickname => {
                 rl.question("Mobile: ", mobile => {
                   rl.question("Twitter Username: ", twitterUsername => {
-                    fs.writeFile(`${firstName}_${lastName}_Data.json`, JSON.stringify({
+
+                    fs.writeFile(`${contactData}${firstName}_${lastName}_Data.json`, JSON.stringify({
                       firstName,
                       lastName,
                       nickname,
-                      mobile
+                      mobile,
+                      twitterUsername
                     }),
                       function(err) {
                         if (err) throw err;
-                        console.log('complete');
+                        console.log('Contact creation complete!');
                       }
                     );
-                  })
-                })
-              })
-            })
-          })
+                  });
+                });
+              });
+            });
+          });
+          app();
+          break;
+
+          case "view":
+            const contactDataSimplifed = contactData.forEach(element => {
+                let arr = [];
+
+                for(let i = 0; i < element.length; i++) {
+                  if(element[i] == "_Data.json") {
+                    
+                  }
+                }
+              });
+            console.log(() => {
+              fs.readdirSync(contactDataSimplifed)
+            });
           break;
 
         default:
