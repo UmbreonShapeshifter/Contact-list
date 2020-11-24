@@ -3,15 +3,19 @@ const fs = require("fs"),
   rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-  });
+  }),
+  database = require("@replit/database"),
+  db = new database();
 
 const app = () => {
-  console.log(`Welcome to the CLI contact list!`)
+  console.log(`Welcome to the CLI contact list!`);
 
-  rl.question(`
+  rl.question(
+    `
 What would you like to do today?
 ===
-For a list of commands: type "Help"\n`,
+For a list of commands: type "Help"
+`,
 
     (response) => {
       response = response.split(` `);
@@ -29,28 +33,31 @@ For a list of commands: type "Help"\n`,
               rl.question("Nickname (or Username): ", nickname => {
                 rl.question("Mobile: ", mobile => {
                   rl.question("Twitter Username: ", twitterUsername => {
-                    fs.writeFile(`${firstName}_${lastName}_Data.json`, JSON.stringify({
+
+                    db.set(`${firstName} ${lastName}`).then(value => {
                       firstName,
                       lastName,
                       nickname,
-                      mobile
-                    }),
-                      function(err) {
-                        if (err) throw err;
-                        console.log('complete');
-                      }
-                    );
-                  })
-                })
-              })
-            })
-          })
-          break;
+                      mobile,
+                      twitterUsername
+                    });
+                  });
+                });
+              });
+            });
+          });
+        app();
+        break;
 
-        default:
-          console.log("Invaild input!");
-      }
-    })
-}
+        case "list":
+          db.list().then(keys => console.log(keys));
+        break;
+
+        case "clear":
+          db.empty().then(i => console.log("Database cleared!"));
+        break;
+      };
+    }
+)};
 
 app();
