@@ -4,13 +4,14 @@ const fs = require("fs"),
     input: process.stdin,
     output: process.stdout
   }),
-  contactData = "./contactData/";
+  database = require("@replit/database"),
+  db = new database();
 
 const app = () => {
   console.log(`Welcome to the CLI contact list!`);
 
   rl.question(
-`
+    `
 What would you like to do today?
 ===
 For a list of commands: type "Help"
@@ -24,7 +25,7 @@ For a list of commands: type "Help"
         case "help":
           console.log("Create: adds a new contact");
           app();
-        break;
+          break;
 
         case "create":
           rl.question("First Name: ", firstName => {
@@ -33,45 +34,30 @@ For a list of commands: type "Help"
                 rl.question("Mobile: ", mobile => {
                   rl.question("Twitter Username: ", twitterUsername => {
 
-                    fs.writeFile(`${contactData}${firstName}_${lastName}_Data.json`, JSON.stringify({
+                    db.set(`${firstName} ${lastName}`).then(value => {
                       firstName,
                       lastName,
                       nickname,
                       mobile,
                       twitterUsername
-                    }),
-                      function(err) {
-                        if (err) throw err;
-                        console.log('Contact creation complete!');
-                      }
-                    );
+                    });
                   });
                 });
               });
             });
           });
-          app();
-          break;
+        app();
+        break;
 
-          case "view":
-            const contactDataSimplifed = contactData.forEach(element => {
-                let arr = [];
+        case "list":
+          db.list().then(keys => console.log(keys));
+        break;
 
-                for(let i = 0; i < element.length; i++) {
-                  if(element[i] == "_Data.json") {
-                    
-                  }
-                }
-              });
-            console.log(() => {
-              fs.readdirSync(contactDataSimplifed)
-            });
-          break;
-
-        default:
-          console.log("Invaild input!");
-      }
-    })
-}
+        case "clear":
+          db.empty().then(i => console.log("Database cleared!"));
+        break;
+      };
+    }
+)};
 
 app();
